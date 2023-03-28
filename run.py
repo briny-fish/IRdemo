@@ -199,7 +199,7 @@ def searchenzh():
     page_size = int(request.args.get('page_size'))
     # 翻译api暂时没更新
     data = baidu_api.baiduAPI_translate_main(data,'zh')
-
+    print(data)
     if (len(data) <= 3):
         tmp = cyc_utils.get_syno_list(data)
         mi = min(len(tmp), 4)

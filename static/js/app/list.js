@@ -44,7 +44,7 @@ var searchMsg = document.getElementById("search-msg");
             '    <p><a href="/search">回到网站首页></a></p>',
             '  </div>'].join('');
     };
-    var flag = 0;
+    var flag = 0;//0 searchall 1 ipc 2 appnum 3 enquery
     var str = window.location.search;//获取url里面的参数
     if (str.indexOf('keyword') != '-1'){
         flag = -1;
@@ -52,6 +52,19 @@ var searchMsg = document.getElementById("search-msg");
         var pos_end = str.indexOf("&", pos_start);
         if (pos_end == -1){
             var keyword = decodeURI(str.substring(pos_start));
+
+        }else{
+            alert("1!");
+        }
+    }
+
+    var str = window.location.search;//获取url里面的en query参数
+    if (str.indexOf('en') != '-1'){
+        flag = 3;
+        var pos_start = str.indexOf('en') + 'en'.length + 1;
+        var pos_end = str.indexOf("&", pos_start);
+        if (pos_end == -1){
+            var en = decodeURI(str.substring(pos_start));
 
         }else{
             alert("1!");
@@ -92,8 +105,12 @@ var searchMsg = document.getElementById("search-msg");
         if(flag==-1){
             data.keyword = decodeURI(keyword);//二次encode的URL，需要二次decode
         }
-        else if(flag==1){data.ipc = decodeURI(ipc);}
-        else{data.appnum=decodeURI(appnum)}
+        else if(flag==3){
+            console.log('flag==3')
+            data.en = decodeURI(en);//二次encode的URL，需要二次decode
+        }
+        else if(flag==1){console.log('flag==1');data.ipc = decodeURI(ipc);}
+        else{console.log('flag==2');data.appnum=decodeURI(appnum)}
         data.page = pageView.getParams().page;
         data.page_size = pageView.getParams().page_size;
         if(flag==-1){
@@ -145,7 +162,8 @@ var searchMsg = document.getElementById("search-msg");
             })
             .always(function(){
                 pageView.enable();
-            });}
+            });
+        }
             else if(flag==1){
            Ajax.get('/searchipc', data)
             .done(function (res) {
@@ -194,7 +212,7 @@ var searchMsg = document.getElementById("search-msg");
             .always(function(){
                 pageView.enable();
             });}
-            else
+            else if(flag==2)
             {
                 Ajax.get('/searchappnum', data)
             .done(function (res) {
@@ -242,6 +260,58 @@ var searchMsg = document.getElementById("search-msg");
             .always(function(){
                 pageView.enable();
             });}
+            else if(flag == 3){
+                Ajax.get('/searchenzh', data)
+            .done(function (res) {
+                if (res.code == 200) {
+                    console.log(res);
+                    var total1 = res.total1;
+                    var total = res.total;
+
+                    pageView.refresh(total1);
+                    var html = [],
+                        renderItems = res.textList,
+                        num = pageView.pageSize,
+                        start = 1,
+                        end = num,
+                        flag = false;
+                    for(var i = start-1; i < end ; i++) {
+                        html.push(getItemHtml(renderItems[i], i, en));
+                    }
+                    $result.html("共搜索到 <span style='color:red;'>" + res.total + "</span> 条结果");
+                    $list.html(html.join(''));
+                    var html1 = [],html2=[],html3=[];
+                    for(i = 0;i<res.statisticsIpc.length;i++)
+                    {
+                        html1.push(["<li ","class='stat'>",res.statisticsIpc[i][0]," : ",res.statisticsIpc[i][1],"</li>"].join(''));
+                        console.log(res.statisticsIpc[i]);
+                    }
+                    for(i = 0;i<res.statisticsApplicant.length;i++)
+                    {
+                        html2.push("<li "+"class='stat'>"+res.statisticsApplicant[i][0]+" : "+res.statisticsApplicant[i][1]+"</li>");
+                    }
+                    for(i = 0;i<res.statisticsAgency.length;i++)
+                    {
+                        html3.push("<li "+"class='stat'>"+res.statisticsAgency[i][0]+" : "+res.statisticsAgency[i][1]+"</li>");
+                    }
+                    $postipc.html(html1.join(""));
+                    $postapplicant.html(html2.join(""));
+                    $postagency.html(html3.join(""));
+                    console.log(html1);
+                    markKeyWord(res.zh);
+                }else if(res.code == 404) {
+                    var html = [];
+                    $('.page-wrapper').css("display",'none');
+                    $('.info_404').css("display",'block');
+                    html.push(html_404());
+                    $('.info_404').html(html.join(''));
+                }
+            })
+            .always(function(){
+                pageView.enable();
+            });
+
+        }
             }
 
     // 寻找整篇文章中包含关键字的文本
