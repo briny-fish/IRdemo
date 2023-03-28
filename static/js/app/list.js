@@ -103,14 +103,16 @@ var searchMsg = document.getElementById("search-msg");
         pageView.disable();
         var data = {};
         if(flag==-1){
+            alert('1');
             data.keyword = decodeURI(keyword);//二次encode的URL，需要二次decode
         }
         else if(flag==3){
             console.log('flag==3')
+            alert('3');
             data.en = decodeURI(en);//二次encode的URL，需要二次decode
         }
-        else if(flag==1){console.log('flag==1');data.ipc = decodeURI(ipc);}
-        else{console.log('flag==2');data.appnum=decodeURI(appnum)}
+        else if(flag==1){alert('1');console.log('flag==1');data.ipc = decodeURI(ipc);}
+        else{alert('2');console.log('flag==2');data.appnum=decodeURI(appnum)}
         data.page = pageView.getParams().page;
         data.page_size = pageView.getParams().page_size;
         if(flag==-1){

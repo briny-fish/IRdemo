@@ -94,6 +94,7 @@ def searchAll():
         mi = min(len(tmp),4)
         if(mi>0):
             data=data+' '+' '.join(tmp[:mi])
+
     data1 = es.search(index=str.lower('full_item'), size=500, body={
         "query": {
 

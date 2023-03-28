@@ -74,7 +74,7 @@ button {
 .search-bar input:focus {
   border-color: slategrey;
 }
-#add-btn,#add-btn1,#add-btn2,#add-btn3
+#add-btn,#add-btn1,#add-btn2,#add-btn3,
 .form-group a.brower-btn {
     padding: 5px 10px 5px 0px;
 	border-radius: 6px;  

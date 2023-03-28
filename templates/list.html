@@ -48,6 +48,7 @@
         <button id="add-btn" class="btn btn-primary btn-sm"  onclick="searchAll()">内容检索</button>
        <button id="add-btn1" class="btn btn-primary btn-sm"  onclick="searchipc()" >ipc号检索</button>
       <button id="add-btn2" class="btn btn-primary btn-sm"  onclick="searchappnum()" >申请号检索</button>
+        <button id="add-btn3" class="btn btn-primary btn-sm"  onclick="searchenzh()" >Engilish</button>
     </div>
 
 
@@ -90,6 +91,13 @@ function searchappnum(){
     console.log("success");
     console.log();
     window.location.href = "list?appnum="+searchMsg.value;
+
+}
+
+function searchenzh(){
+    console.log("success");
+    console.log();
+    window.location.href = "list?en="+searchMsg.value;
 
 }
     seajs.use("./static/js/app/list");
