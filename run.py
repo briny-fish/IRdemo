@@ -195,25 +195,58 @@ def searchappnum():
 def searchenzh():
     print(request.args)
     data = request.args.get('en')
-    print(data)
-    data1 = es.search(index=str.lower('full_item'),size=1, body={
+    page = int(request.args.get('page'))
+    page_size = int(request.args.get('page_size'))
+    # 翻译api暂时没更新
+    data = baidu_api.baiduAPI_translate_main(data,'zh')
 
-    "query": {
-        "match": { "appnum": data}
-         }
+    if (len(data) <= 3):
+        tmp = cyc_utils.get_syno_list(data)
+        mi = min(len(tmp), 4)
+        if (mi > 0):
+            data = data + ' ' + ' '.join(tmp[:mi])
+    data1 = es.search(index=str.lower('full_item'), size=500, body={
+        "query": {
+
+            "bool": {
+                "should": [
+                    {
+                        "match": {
+                            "title": {
+                                "query": data,
+                                "boost": 3
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "abstract": data
+                        }
+                    },
+                    {
+                        "match": {
+                            "requirement": data
+                        }
+                    }
+                ]
+            }
+        }
     })['hits']
+    print(data)
     datart = []
     for line in data1['hits']:
         datart.append(line['_source'])
     rst = {}
-    rst['total'] = data1['total']['value']
-    rst['total1'] = len(datart)
-    rst['textList'] = datart
-    rst['code'] = 200
     rst['statisticsIpc'] = stIpc(datart)
     rst['statisticsApplicant'] = stApplicant(datart)
     rst['statisticsAgency'] = stAgency(datart)
-    print(data1)
+
+    rst['zh'] = data
+    rst['total'] = data1['total']['value']
+    rst['total1'] = len(datart)
+    rst['textList'] = datart[(page - 1) * page_size:page * page_size]
+    rst['code'] = 200
+
     return jsonify(rst)
 
 
